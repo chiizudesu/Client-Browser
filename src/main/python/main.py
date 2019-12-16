@@ -23,6 +23,7 @@ configpath = f'{os.environ["USERPROFILE"]}\\Client Browser'
 configfile = f'{configpath}\\config.txt'
 configparam = ['clientdir', 'autocomplete', 'yearprefix']
 
+
 class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     def __init__(self):
         """Window Object"""
