@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "C:\\Users\\John.IOCA\\Desktop\\Projects\\Python\\cb"
+		}
+	],
+	"settings": {
+		"python.venvPath": "venv\\",
+		"python.pythonPath": "venv\\Scripts\\python.exe"
+	}
+}
