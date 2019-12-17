@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import (QAction, QApplication, QComboBox, QCompleter,
                              QGridLayout, QLabel, QLineEdit, QMainWindow,
                              QMenu, QMenuBar, QMessageBox, QProgressBar,
                              QPushButton, QStatusBar, QTextEdit, QToolBar,
-                             QToolTip, QVBoxLayout, QWidget, qApp)
+                             QToolTip, QVBoxLayout, QWidget, qApp,
+                             QDesktopWidget)
 
 from ui import main, settings
 
@@ -79,6 +80,13 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.oldPos = self.pos()
         self.settingsbox = Settings()
         self.flags = QtCore.Qt.WindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.dimensions = QApplication.desktop().screenGeometry()
+        self.screenwidth = self.dimensions.width()
+        self.screenheight = self.dimensions.height()
+        self.pic = QPixmap(":/img/ui/images/icon.png")
+
+    def resolution(self):
+        pass
 
     def init_widgets(self):
         self.populate()
@@ -91,6 +99,8 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.setWindowFlags(self.flags) # Set Flags (Frameless)
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.backbutton.setEnabled(False)
+        self.label_4.setPixmap(self.pic)
+        # self.verticalLayout_4.addWidget(self.label_4)
 
     def load_settings(self):
         """Load settings from config file"""
@@ -245,6 +255,14 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.upper.clicked.connect(self.go_up)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
         self.lineEdit.returnPressed.connect(self.client_selected)
+        self.resizebutton.clicked.connect(self.resize_window)
+        self.titlebar.mouseDoubleClickEvent = self.resize_window
+
+    def resize_window(self, *event):
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
 
     def save_settings(self):
         self.settingsbox.writer()
@@ -319,6 +337,18 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         delta = QPoint(event.globalPos() - self.oldPos)
         self.move(self.x() + delta.x(), self.y() + delta.y())
         self.oldPos = event.globalPos()
+
+        print(self.isMaximized())
+        print(event.globalPos().y())
+        if self.isMaximized():
+            self.showNormal()
+
+    def mouseReleaseEvent(self, event):
+        xresize = [1919,1918,1920,1917,3839]
+        if event.globalPos().x() in xresize:
+            self.showMaximized()
+        elif not event.globalPos().y():
+            self.showMaximized()
 
 
 class Settings(settings.Ui_Dialog, QDialog):
