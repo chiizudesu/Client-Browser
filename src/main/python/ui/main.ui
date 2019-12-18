@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1155</width>
-    <height>679</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,6 +40,9 @@
      <width>1000</width>
      <height>2</height>
     </size>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <property name="spacing">
@@ -147,7 +150,7 @@
           <item>
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -219,7 +222,7 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>11</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -292,7 +295,7 @@
             <property name="font">
              <font>
               <family>MS Shell Dlg 2</family>
-              <pointsize>14</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="contextMenuPolicy">
@@ -513,13 +516,13 @@ background-color: rgb(28, 41, 54);border-radius:none;border-color:none</string>
          </property>
          <property name="minimumSize">
           <size>
-           <width>115</width>
+           <width>100</width>
            <height>30</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>115</width>
+           <width>100</width>
            <height>30</height>
           </size>
          </property>
@@ -539,16 +542,20 @@ background-color: rgb(28, 41, 54);border-radius:none;border-color:none</string>
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>Jump to Workpaper Folder</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>801</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
@@ -710,8 +717,10 @@ border-color: rgb(25, 35, 45);</string>
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="styleSheet">
-          <string notr="true">:hover{border-color: rgb(255, 255, 0);border:5px;border-radius:5px;
-background-color: rgb(28, 41, 54)}</string>
+          <string notr="true">background-color:yellow,
+:hover{border-color: rgb(255, 255, 0);border:5px;border-radius:5px;
+background-color: rgb(28, 41, 54)}
+</string>
          </property>
          <property name="text">
           <string>Select a client...</string>
@@ -953,7 +962,7 @@ background-color: rgb(28, 41, 54)}</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>15</number>
+        <number>7</number>
        </property>
        <property name="leftMargin">
         <number>20</number>
@@ -965,75 +974,218 @@ background-color: rgb(28, 41, 54)}</string>
         <number>20</number>
        </property>
        <property name="bottomMargin">
-        <number>20</number>
+        <number>10</number>
        </property>
        <item>
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QFrame" name="infoframe">
          <property name="minimumSize">
           <size>
-           <width>300</width>
+           <width>20</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>300</width>
+           <width>280</width>
            <height>16777215</height>
           </size>
          </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>298</width>
-            <height>416</height>
-           </rect>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="spacing">
+           <number>1</number>
           </property>
-         </widget>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QScrollArea" name="infoarea">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>260</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>260</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius:0px</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>260</width>
+               <height>424</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="hide_unhide_info">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>412</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius:0px</string>
+            </property>
+            <property name="text">
+             <string>⯇</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QTreeView" name="treeView">
-         <property name="enabled">
-          <bool>true</bool>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="tabPosition">
+          <enum>QTabWidget::North</enum>
          </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="tabShape">
+          <enum>QTabWidget::Triangular</enum>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-         <property name="baseSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>MS Shell Dlg 2</family>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="cursor" stdset="0">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string>58 Paerangi Consolidated Group</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTreeView" name="treeView">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>MS Shell Dlg 2</family>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="cursor" stdset="0">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-radius:0px</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="showDropIndicator" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectItems</enum>
+             </property>
+             <property name="itemsExpandable">
+              <bool>false</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
+           <string>Ma. Ferlline Kay Cayabyab Magcalas</string>
+          </attribute>
+         </widget>
         </widget>
        </item>
       </layout>

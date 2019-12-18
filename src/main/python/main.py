@@ -50,6 +50,7 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
                 self.parent = None
             if self.level >= 3:
                 self.clientname = self.parts[2]
+                self.clientfolder = '\\'.join(self.parts[0:3])
             else:
                 self.clientname = None
             if self.level >= 4:
@@ -65,7 +66,9 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     # TODO: For future update > Add XPM Links                     // ETA: 10 Hours
     # TODO: Context Menu > Add New  > Workpapers / Folder         // ETA: 30 Minutes
     # TODO: Add double click event to open files in tree view     // ETA: 50 Minutes
-    # TODO: Add images for close and minimize button              // ETA: 20 Minutes
+    # TODO: Back/Button implement
+    # TODO: Rewrite folder function
+    # TODO:
 
     def variables(self):
         self.configpath = configpath
@@ -73,6 +76,7 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.configfile = configfile
         self.wpfolder = 'Annual Workpapers'
         self.prevpath = []
+        self.prevclient = ''
         self.listyear = []
         self.clientname = ''
         self.count = 0
@@ -84,9 +88,9 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.screenwidth = self.dimensions.width()
         self.screenheight = self.dimensions.height()
         self.pic = QPixmap(":/img/ui/images/icon.png")
-
-    def resolution(self):
-        pass
+        self.busycursor = QtGui.QCursor(QtCore.Qt.BusyCursor)
+        self.arrowcursor = QtGui.QCursor(QtCore.Qt.ArrowCursor)
+        self.statusBar = QStatusBar()
 
     def init_widgets(self):
         self.populate()
@@ -98,22 +102,12 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.treeView.setRootIndex(self.model.index(self.clientdir))
         self.setWindowFlags(self.flags) # Set Flags (Frameless)
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.backbutton.setEnabled(False)
+        # self.backbutton.setEnabled(False)
         self.label_4.setPixmap(self.pic)
-        # self.verticalLayout_4.addWidget(self.label_4)
+        self.setStatusBar(self.statusBar)
 
     def load_settings(self):
         """Load settings from config file"""
-
-        # Settings File
-        if not os.path.exists(self.configpath):
-            os.mkdir(self.configpath)
-        if not os.path.exists(self.configfile):
-            with open(self.configfile, 'w+') as f:
-                separator = '=\n'
-                f.write(separator.join(self.configparam) + '=')
-                f.close
-
         # Read config file
         configuration = open(self.configfile, 'r')
         self.settings = {}
@@ -134,9 +128,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.diryear = f'{self.yearpref}{self.year}'
 
     def select_client(self, event):
-        """Hide label and show line edit"""
+        """Hide label and show line edit - activated by label click"""
         self.clientlabel.hide()
         self.lineEdit.show()
+        self.lineEdit.setFocus()
 
     def hide_client(self):
         self.lineEdit.setText('')
@@ -151,28 +146,39 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.folder(opt='selected')
 
     def folder(self, opt=None):
-        """Changing folder function, all of them passed here"""
+        """Folder navigation function"""
         #Folder instance for prev folder
+        self.treeView.viewport().setProperty("cursor", self.busycursor)
         self.prevfolder = self.Folder(self.path)
         self.prevpath.append(self.prevfolder.path)
+
         if self.prevfolder.clientname:
-            self.prevclient = s
+            self.prevclient = self.prevfolder.clientname
+
         # Detect how folder function is initialized
         if opt == 'selected':
             self.clientname = self.lineEdit.text()
-            self.path = '\\'.join([self.clientdir,self.clientname,self.year])
-        # elif opt == 'back':
-        #     pass
-
+            self.path = '\\'.join([self.clientdir,self.clientname,self.yearpref +
+                                    self.year])
+            print(self.path)
+        elif opt == 'back':
+            print(self.prevpath)
         elif opt == 'manual':
             self.path = self.openpath
-        # elif opt == 'up':
-        # elif opt == 'switch':
+        elif opt == 'up':
+            self.path = self.prevfolder.parent
+        elif opt == 'switch':
+            pass
 
         #Folder instance for current folder
         self.currfolder = self.Folder(self.path)
-        self.treeView.setRootIndex(self.model.index(self.path)) #Run folder
 
+        #Run Folder
+        self.model.setRootPath(self.path)
+        self.treeView.setRootIndex(self.model.index(self.path))
+        self.treeView.viewport().setProperty("cursor", self.arrowcursor)
+
+    def update_folder(self, *event):
         #Detect year and declare year variables
         if self.currfolder.year:
             self.yearline.setText(self.currfolder.year)
@@ -187,17 +193,14 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         elif self.currfolder.clientname:  # Detect if on second level
             self.clientname = self.currfolder.clientname
             self.labeltext = textwrap.shorten(self.clientname,
-                                                65,placeholder='...')
+                                              65, placeholder='...')
             self.clientlabel.setText(self.labeltext)
             self.lineEdit.setText(self.clientname)
             self.lineEdit.hide()
             self.clientlabel.show()
             if self.prevclient != self.clientname:
-                self.years(self.clientfolder, clear=True)
+                self.years(self.currfolder.clientfolder, clear=True)
                 print(self.listyear)
-        # Storing paths to a list
-
-        # Toggle year widget if current index contains year pref
         self.windowspath = self.path.replace('/', '\\')
         self.addressbar.setText(self.windowspath)
         self.backbutton.setEnabled(True)
@@ -209,14 +212,17 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
             self.index = 0
 
         folders = os.listdir(yearfolder)
+        print(folders)
+        print(self.yearpref)
         for folder in folders:
             if self.yearpref in folder:
                 year = folder.lstrip(self.yearpref)
                 self.listyear.append(year)
+        print(self.listyear)
+        self.index = self.listyear.index(self.year)
 
     def goback(self):
-        # self.folder(opt='back')
-        pass
+        self.folder(opt='back')
 
     def go_up(self):
         self.folder(opt='up')
@@ -229,13 +235,6 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     def switchyear(self, event):
         """Switch one year on yearline"""
         print(event)
-        currfolder = os.path.basename(self.path)
-        self.curryear = currfolder.strip(self.yearpref)
-        self.index = self.listyear.index(self.curryear)
-        # if event.key():
-        #     self.index += 1
-        # else:
-        #     self.index -= 1
         self.newyear = self.listyear[self.index]
         self.yearline.setText(self.newyear)
         self.folder(opt='switch')
@@ -257,6 +256,16 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.lineEdit.returnPressed.connect(self.client_selected)
         self.resizebutton.clicked.connect(self.resize_window)
         self.titlebar.mouseDoubleClickEvent = self.resize_window
+        self.model.rootPathChanged.connect(self.update_folder)
+        self.hide_unhide_info.clicked.connect(self.hide_unhide_)
+
+    def hide_unhide_(self):
+        if self.infoarea.isHidden():
+            self.infoarea.show()
+            self.hide_unhide_info.setText('⯇')
+        else:
+            self.infoarea.hide()
+            self.hide_unhide_info.setText('⯈')
 
     def resize_window(self, *event):
         if self.isMaximized():
@@ -280,6 +289,7 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         """Load file browser model on tree view"""
         self.model = QtWidgets.QFileSystemModel()
         self.model.setRootPath((QtCore.QDir.rootPath()))
+        # print(QtCore.QDir.rootPath())
         self.treeView.setModel(self.model)
         self.treeView.setColumnWidth(0, 350)
         self.treeView.setSortingEnabled(1)
@@ -324,7 +334,6 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         if event.key() == QtCore.Qt.Key_Backspace:  # Go back on previous folder
             self.folder(opt='back')
 
-        print(event.key())
 
     def mousePressEvent(self, event):
         """Record the position when mouse is pressed"""
@@ -335,16 +344,14 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     def mouseMoveEvent(self, event):
         """Updating positions as we drag"""
         delta = QPoint(event.globalPos() - self.oldPos)
-        self.move(self.x() + delta.x(), self.y() + delta.y())
+        if not self.isMaximized():
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+        elif delta.y():
+            self.showNormal()
         self.oldPos = event.globalPos()
 
-        print(self.isMaximized())
-        print(event.globalPos().y())
-        if self.isMaximized():
-            self.showNormal()
-
     def mouseReleaseEvent(self, event):
-        xresize = [1919,1918,1920,1917,3839]
+        xresize = [1919,1918,1920,1917,3839,3840]
         if event.globalPos().x() in xresize:
             self.showMaximized()
         elif not event.globalPos().y():
@@ -364,6 +371,7 @@ class Settings(settings.Ui_Dialog, QDialog):
     def variables(self):
         self.configpath = configpath
         self.configfile = configfile
+        self.configparam = configparam
         self.cmodes = ['Popup', 'Unfiltered Popup', 'Inline']
 
     def actions(self):
@@ -373,6 +381,15 @@ class Settings(settings.Ui_Dialog, QDialog):
         self.autocomplete.addItems(self.cmodes)
 
     def reader(self):
+        # Config File
+        if not os.path.exists(self.configpath):
+            os.mkdir(self.configpath)
+        if not os.path.exists(self.configfile):
+            with open(self.configfile, 'w+') as f:
+                separator = '=\n'
+                f.write(separator.join(self.configparam) + '=')
+                f.close
+
         self.settings = {}
         configuration = open(self.configfile, 'r')
         for lines in configuration.readlines():
