@@ -31,6 +31,12 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>
@@ -258,6 +264,7 @@
             </property>
             <property name="font">
              <font>
+              <family>Marlett</family>
               <pointsize>11</pointsize>
              </font>
             </property>
@@ -265,7 +272,7 @@
              <string notr="true">:hover{background-color: rgb(49, 71, 93);border-color: none;border-radius: 0px;border:1px }</string>
             </property>
             <property name="text">
-             <string>🗖</string>
+             <string></string>
             </property>
             <property name="flat">
              <bool>false</bool>
@@ -717,8 +724,7 @@ border-color: rgb(25, 35, 45);</string>
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color:yellow,
-:hover{border-color: rgb(255, 255, 0);border:5px;border-radius:5px;
+          <string notr="true">:hover{border-color: rgb(255, 255, 0);border:5px;border-radius:5px;
 background-color: rgb(28, 41, 54)}
 </string>
          </property>
@@ -852,6 +858,9 @@ background-color: rgb(28, 41, 54)}
           <font>
            <pointsize>14</pointsize>
           </font>
+         </property>
+         <property name="toolTip">
+          <string/>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color: rgb(28, 41, 54);</string>
@@ -1060,6 +1069,166 @@ background-color: rgb(28, 41, 54)}
            </widget>
           </item>
           <item>
+           <widget class="QFrame" name="infolabels">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <property name="spacing">
+              <number>2</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_7">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string notr="true"/>
+               </property>
+               <property name="toolTipDuration">
+                <number>-1</number>
+               </property>
+               <property name="whatsThis">
+                <string>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">border-radius:5px;background-color: rgb(49, 72, 95);</string>
+               </property>
+               <property name="text">
+                <string>A0</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">border-radius:5px;background-color: rgb(49, 72, 95);</string>
+               </property>
+               <property name="text">
+                <string>#</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">border-radius:5px;background-color: rgb(49, 72, 95);</string>
+               </property>
+               <property name="text">
+                <string>ET</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>17</width>
+                 <height>50</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="hide_unhide_info">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
@@ -1091,7 +1260,7 @@ background-color: rgb(28, 41, 54)}
         </widget>
        </item>
        <item>
-        <widget class="QTabWidget" name="tabWidget">
+        <widget class="QTabWidget" name="browsertab">
          <property name="tabPosition">
           <enum>QTabWidget::North</enum>
          </property>
@@ -1101,9 +1270,18 @@ background-color: rgb(28, 41, 54)}
          <property name="currentIndex">
           <number>0</number>
          </property>
+         <property name="tabsClosable">
+          <bool>true</bool>
+         </property>
+         <property name="movable">
+          <bool>true</bool>
+         </property>
+         <property name="tabBarAutoHide">
+          <bool>false</bool>
+         </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
-           <string>58 Paerangi Consolidated Group</string>
+           <string>Client Name</string>
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_8">
            <property name="spacing">
@@ -1183,7 +1361,7 @@ background-color: rgb(28, 41, 54)}
          </widget>
          <widget class="QWidget" name="tab_2">
           <attribute name="title">
-           <string>Ma. Ferlline Kay Cayabyab Magcalas</string>
+           <string>Page</string>
           </attribute>
          </widget>
         </widget>

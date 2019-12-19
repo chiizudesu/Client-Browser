@@ -2,6 +2,8 @@ import os
 import sys
 import textwrap
 import time
+import configparser
+
 from datetime import datetime
 
 import qdarkstyle
@@ -55,7 +57,7 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
                 self.clientname = None
             if self.level >= 4:
                 if self.yearpref in self.parts[3]:
-                    self.year = self.parts[3].strip(self.yearpref)
+                    self.year = self.parts[3].lstrip(self.yearpref)
                 else:
                     self.year = None
             else:
@@ -98,13 +100,20 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.actions()
         self.toggle_year(False)
         self.lineEdit.hide()
-        self.yearline.setText(self.year)
+        self.yearline.setText('-')
         self.treeView.setRootIndex(self.model.index(self.clientdir))
         self.setWindowFlags(self.flags) # Set Flags (Frameless)
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # self.backbutton.setEnabled(False)
         self.label_4.setPixmap(self.pic)
         self.setStatusBar(self.statusBar)
+        self.infolabels.hide()
+        self.cornerwidget = QPushButton()
+        self.cornerwidget.setStyleSheet('background-color: rgb(28, 41, 54)')
+        self.cornerwidget.setText('+')
+        self.cornerwidget.setMinimumSize(20,20)
+        self.cornerwidget.setMaximumSize(20,20)
+        self.browsertab.setCornerWidget(self.cornerwidget, corner=QtCore.Qt.TopLeftCorner)
 
     def load_settings(self):
         """Load settings from config file"""
@@ -126,6 +135,8 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.yearpref = self.settings['yearprefix']
         self.year = str(datetime.now().year)
         self.diryear = f'{self.yearpref}{self.year}'
+
+        #DONT READ TWICE
 
     def select_client(self, event):
         """Hide label and show line edit - activated by label click"""
@@ -158,9 +169,8 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         # Detect how folder function is initialized
         if opt == 'selected':
             self.clientname = self.lineEdit.text()
-            self.path = '\\'.join([self.clientdir,self.clientname,self.yearpref +
-                                    self.year])
-            print(self.path)
+            self.path = '\\'.join([self.clientdir, self.clientname,
+                                   self.diryear])
         elif opt == 'back':
             print(self.prevpath)
         elif opt == 'manual':
@@ -168,7 +178,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         elif opt == 'up':
             self.path = self.prevfolder.parent
         elif opt == 'switch':
-            pass
+            self.path = self.prevfolder.path.replace(self.oldyear,
+                                                     self.newyear)
+        elif opt == 'addressed':
+            self.path = self.addressbar.text()
 
         #Folder instance for current folder
         self.currfolder = self.Folder(self.path)
@@ -177,6 +190,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.model.setRootPath(self.path)
         self.treeView.setRootIndex(self.model.index(self.path))
         self.treeView.viewport().setProperty("cursor", self.arrowcursor)
+
+    def addressed(self):
+        self.addressbar.clearFocus()
+        self.folder(opt='addressed')
 
     def update_folder(self, *event):
         #Detect year and declare year variables
@@ -192,15 +209,14 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
             self.hide_client()
         elif self.currfolder.clientname:  # Detect if on second level
             self.clientname = self.currfolder.clientname
-            self.labeltext = textwrap.shorten(self.clientname,
-                                              65, placeholder='...')
+            self.labeltext = textwrap.shorten(self.clientname,65,
+                                              placeholder='...')
             self.clientlabel.setText(self.labeltext)
             self.lineEdit.setText(self.clientname)
             self.lineEdit.hide()
             self.clientlabel.show()
             if self.prevclient != self.clientname:
                 self.years(self.currfolder.clientfolder, clear=True)
-                print(self.listyear)
         self.windowspath = self.path.replace('/', '\\')
         self.addressbar.setText(self.windowspath)
         self.backbutton.setEnabled(True)
@@ -212,14 +228,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
             self.index = 0
 
         folders = os.listdir(yearfolder)
-        print(folders)
-        print(self.yearpref)
         for folder in folders:
             if self.yearpref in folder:
                 year = folder.lstrip(self.yearpref)
                 self.listyear.append(year)
-        print(self.listyear)
-        self.index = self.listyear.index(self.year)
 
     def goback(self):
         self.folder(opt='back')
@@ -232,9 +244,26 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.leftarrow.setEnabled(boolean)
         self.yearline.setEnabled(boolean)
 
-    def switchyear(self, event):
-        """Switch one year on yearline"""
-        print(event)
+    def prevyear(self, *event):
+        """Switch prev year on yearline"""
+        self.index = self.listyear.index(self.currfolder.year)
+        self.oldyear = self.listyear[self.index]
+        if not self.index:
+            self.index = len(self.listyear) - 1
+        else:
+            self.index -= 1
+        self.newyear = self.listyear[self.index]
+        self.yearline.setText(self.newyear)
+        self.folder(opt='switch')
+
+    def nextyear(self, *event):
+        """Switch next year on yearline"""
+        self.index = self.listyear.index(self.currfolder.year)
+        self.oldyear = self.listyear[self.index]
+        if self.index == len(self.listyear) - 1:
+            self.index = 0
+        else:
+            self.index += 1
         self.newyear = self.listyear[self.index]
         self.yearline.setText(self.newyear)
         self.folder(opt='switch')
@@ -245,8 +274,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.minimizebutton.clicked.connect(self.showMinimized)
         self.completer.activated.connect(self.client_selected)
         self.settingsbutton.clicked.connect(self.open_settings)
-        self.rightarrow.mousePressEvent = self.switchyear
-        self.leftarrow.mousePressEvent = self.switchyear
+        self.rightarrow.mousePressEvent = self.nextyear
+        self.leftarrow.mousePressEvent = self.prevyear
+        self.leftarrow.mouseMoveEvent = self.empty
+        self.rightarrow.mouseMoveEvent = self.empty
         self.clientlabel.mousePressEvent = self.select_client
         self.backbutton.clicked.connect(self.goback)
         self.settingsbox.buttonBox.accepted.connect(self.save_settings)
@@ -258,20 +289,37 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
         self.titlebar.mouseDoubleClickEvent = self.resize_window
         self.model.rootPathChanged.connect(self.update_folder)
         self.hide_unhide_info.clicked.connect(self.hide_unhide_)
+        self.titlebar.mouseMoveEvent = self.drag
+        self.addressbar.returnPressed.connect(self.addressed)
+        self.titlebar.mousePressEvent = self.title_pressed
+        self.File.clicked.connect(self.addtab)
+
+    def addtab(self):
+        label = QLabel('Test')
+        self.browsertab.addTab(label,'Test')
 
     def hide_unhide_(self):
         if self.infoarea.isHidden():
             self.infoarea.show()
+            self.infolabels.hide()
             self.hide_unhide_info.setText('⯇')
         else:
             self.infoarea.hide()
+            self.infolabels.show()
             self.hide_unhide_info.setText('⯈')
+
+    def resized(self):
+        if not self.isMaximized():
+            self.resizebutton.setText('')
+        else:
+            self.resizebutton.setText('')
 
     def resize_window(self, *event):
         if self.isMaximized():
             self.showNormal()
         else:
             self.showMaximized()
+        self.resized()
 
     def save_settings(self):
         self.settingsbox.writer()
@@ -328,8 +376,10 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     def keyPressEvent(self, event):
         """Key press events"""
         #if Esc is pressed while on line edit
-        if self.clientlabel.isHidden() and event.key() == 16777216:
+        if self.lineEdit.hasFocus() and event.key() == 16777216:
             self.hide_client()
+        elif self.addressbar.hasFocus() and event.key() == 16777216:
+            self.addressbar.clearFocus()
 
         if event.key() == QtCore.Qt.Key_Backspace:  # Go back on previous folder
             self.folder(opt='back')
@@ -337,25 +387,34 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
 
     def mousePressEvent(self, event):
         """Record the position when mouse is pressed"""
-        self.oldPos = event.globalPos()
         if self.clientlabel.isHidden():
             self.hide_client()
+        if self.addressbar.hasFocus():
+            self.addressbar.clearFocus()
 
-    def mouseMoveEvent(self, event):
+    def empty(self, event):
+        pass
+
+    def title_pressed(self, event):
+        self.oldPos = event.globalPos()
+
+    def drag(self, event):
         """Updating positions as we drag"""
         delta = QPoint(event.globalPos() - self.oldPos)
         if not self.isMaximized():
             self.move(self.x() + delta.x(), self.y() + delta.y())
         elif delta.y():
             self.showNormal()
+            self.move(self.oldPos)
         self.oldPos = event.globalPos()
 
     def mouseReleaseEvent(self, event):
-        xresize = [1919,1918,1920,1917,3839,3840]
+        xresize = [0,1919,1918,1920,1917,3839,3840]
         if event.globalPos().x() in xresize:
             self.showMaximized()
         elif not event.globalPos().y():
             self.showMaximized()
+        self.resized()
 
 
 class Settings(settings.Ui_Dialog, QDialog):
@@ -436,3 +495,9 @@ if __name__ == '__main__':
     my_app.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())  # Dark Theme
     exit_code = Window()
     my_app.app.exec_()
+
+# if __name__ == '__main__':
+#     my_app = QApplication(sys.argv)
+#     my_app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())  # Dark Theme
+#     exit_code = Window()
+#     my_app.exec_()
