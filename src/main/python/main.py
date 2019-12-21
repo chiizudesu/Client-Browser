@@ -70,7 +70,6 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     # TODO: Add double click event to open files in tree view     // ETA: 50 Minutes
     # TODO: Back/Button implement
     # TODO: Rewrite folder function
-    # TODO:
 
     def variables(self):
         self.configpath = configpath
