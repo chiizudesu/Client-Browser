@@ -69,7 +69,6 @@ class Window(main.Ui_MainWindow, QMainWindow, ApplicationContext):
     # TODO: Context Menu > Add New  > Workpapers / Folder         // ETA: 30 Minutes
     # TODO: Add double click event to open files in tree view     // ETA: 50 Minutes
     # TODO: Back/Button implement
-    # TODO: Rewrite folder function
 
     def variables(self):
         self.configpath = configpath
